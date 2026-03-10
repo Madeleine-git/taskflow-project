@@ -2,7 +2,7 @@
   "name": "taskflow-project",
   "version": "1.0.0",
   "scripts": {
-    "build": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --minify && cp index.html dist/ && cp app.js dist/"
+    "build": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --minify && copy index.html dist\\ && copy app.js dist\\"
   },
   "dependencies": {
     "tailwindcss": "^3.4.17"
