@@ -20,11 +20,7 @@
     @apply absolute text-white text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }
 
-  .error-shake {
-    @apply animate-shake border-red-500 !important;
-  }
-
-  .texto-largo {
+   .texto-largo {
     @apply break-words hyphens-auto;
   }
 
