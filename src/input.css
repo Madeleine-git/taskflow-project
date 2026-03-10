@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos personalizados */
 @layer components {
   .editing {
     @apply bg-blue-500/10 border-2 border-blue-500 rounded px-1.5 outline-none;
@@ -26,10 +25,9 @@
   }
 
   .titulo-largo {
-    @apply break-words hyphens-auto;  /* ← Corregido: 4 espacios de indentación */
+    @apply break-words hyphens-auto;
   }
 
-  /* Mueve esto dentro del @layer */
   .dark .estado-casilla-de-verificacion {
     @apply border-slate-600;
   }
