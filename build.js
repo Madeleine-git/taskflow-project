@@ -3,18 +3,27 @@ const fs = require('fs');
 
 // Crear dist limpio
 if (fs.existsSync('dist')) {
-  fs.rmSync('dist', { recursive: true });
+  fs.rmSync('dist', { recursive: true, force: true });
 }
 fs.mkdirSync('dist');
 
-// Build CSS
+// Build CSS - usa el binario directo sin npx
 console.log('Building CSS...');
-execSync('npx tailwindcss -i ./src/input.css -o ./dist/output.css --minify', {
-  stdio: 'inherit',
-  shell: true
-});
+try {
+  execSync('./node_modules/.bin/tailwindcss -i ./src/input.css -o ./dist/output.css --minify', {
+    stdio: 'inherit',
+    shell: true
+  });
+} catch (e) {
+  // Si falla, intenta con node
+  console.log('Trying with node...');
+  execSync('node ./node_modules/tailwindcss/lib/cli.js -i ./src/input.css -o ./dist/output.css --minify', {
+    stdio: 'inherit',
+    shell: true
+  });
+}
 
-// Copiar archivos (forzando sobreescritura)
+// Copiar archivos
 console.log('Copying files...');
 fs.copyFileSync('index.html', 'dist/index.html');
 fs.copyFileSync('app.js', 'dist/app.js');
