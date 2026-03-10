@@ -26,10 +26,11 @@
   }
 
   .titulo-largo {
-  @apply break-words hyphens-auto;
+    @apply break-words hyphens-auto;  /* ← Corregido: 4 espacios de indentación */
   }
-}
 
-.dark .estado-casilla-de-verificacion {
-  @apply border-slate-600;
+  /* Mueve esto dentro del @layer */
+  .dark .estado-casilla-de-verificacion {
+    @apply border-slate-600;
+  }
 }
