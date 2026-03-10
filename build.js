@@ -1,6 +1,5 @@
-const { execSync } = require('child');
+const { execSync } = require('child_process');  // ← CORREGIDO: child_process
 const fs = require('fs');
-const path = require('path');
 
 // Crear dist si no existe
 if (!fs.existsSync('dist')) {
