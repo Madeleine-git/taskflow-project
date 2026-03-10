@@ -1,40 +1,12 @@
 const { execSync } = require('child_process');
-const fs = require('fs');
 
-// Crear dist limpio
-if (fs.existsSync('dist')) {
-  fs.rmSync('dist', { recursive: true, force: true });
-}
-fs.mkdirSync('dist');
-
-// Build CSS - usa el binario directo sin npx
-console.log('Building CSS...');
 try {
-  execSync('./node_modules/.bin/tailwindcss -i ./src/input.css -o ./dist/output.css --minify', {
-    stdio: 'inherit',
-    shell: true
+  console.log('Building CSS...');
+  execSync('npx tailwindcss -i ./src/input.css -o ./output.css --minify', {
+    stdio: 'inherit'
   });
-} catch (e) {
-  // Si falla, intenta con node
-  console.log('Trying with node...');
-  execSync('node ./node_modules/tailwindcss/lib/cli.js -i ./src/input.css -o ./dist/output.css --minify', {
-    stdio: 'inherit',
-    shell: true
-  });
-}
-
-// Copiar archivos
-console.log('Copying files...');
-fs.copyFileSync('index.html', 'dist/index.html');
-fs.copyFileSync('app.js', 'dist/app.js');
-
-// Verificación
-const distContent = fs.readFileSync('dist/index.html', 'utf8');
-if (distContent.includes('cdn.tailwindcss.com')) {
-  console.error('ERROR: dist/index.html still has CDN!');
+  console.log('Build completed!');
+} catch (error) {
+  console.error('Build failed:', error);
   process.exit(1);
-} else {
-  console.log('✅ dist/index.html is correct (no CDN)');
 }
-
-console.log('Build complete!');
