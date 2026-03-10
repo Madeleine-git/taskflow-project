@@ -1,10 +1,9 @@
 {
-  "name": "taskflow-project",
-  "version": "1.0.0",
   "scripts": {
-    "build": "node build.js"
+    "build": "tailwindcss -i ./src/input.css -o ./output.css",
+    "dev": "tailwindcss -i ./src/input.css -o ./output.css --watch"
   },
-  "dependencies": {
-    "tailwindcss": "^3.4.17"
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
   }
 }
