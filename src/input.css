@@ -30,7 +30,6 @@
   }
 }
 
-/* Modo oscuro para checkbox */
-.dark .estado-checkbox {
+.dark .estado-casilla-de-verificacion {
   @apply border-slate-600;
 }
