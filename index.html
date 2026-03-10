@@ -4,7 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Digital</title>
-    <link rel="stylesheet" href="dist/output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'slide-out': 'slideOut 0.3s ease-out',
+                        'shake': 'shake 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideOut: {
+                            '0%': { transform: 'translateX(0)', opacity: '1' },
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .editing {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            border-radius: 4px;
+            padding: 2px 6px;
+            outline: none;
+        }
+        .estado-checkbox {
+            appearance: none;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .estado-checkbox:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .estado-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 0.8rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .dark .estado-checkbox {
+            border-color: #475569;
+        }
+        .error-shake {
+            animation: shake 0.5s ease-in-out;
+            border-color: #ef4444 !important;
+        }
+        .titulo-largo {
+            word-break: break-word;
+            hyphens: auto;
+        }
+    </style>
 </head>
 <body class="font-sans bg-slate-100 text-slate-800 leading-relaxed dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
     
@@ -49,7 +126,29 @@
     <main class="flex flex-col lg:flex-row gap-6 p-6 max-w-7xl mx-auto w-full flex-1">
         
         <!-- Sidebar -->
-        <aside class="w-full lg:w-72 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md h-fit lg:sticky lg:top-32 transition-colors duration-300 shrink-0">
+        <aside class="w-full lg:w-72 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md h-fit lg:sticky lg:top-32 transition-colors duration-300 shrink-0 space-y-6">
+            
+            <!-- Estadísticas -->
+            <div class="border-b-2 border-slate-100 dark:border-slate-600 pb-4">
+                <h2 class="mt-0 mb-4 text-slate-900 dark:text-white text-xl font-bold flex items-center gap-2">
+                    📊 Estadísticas
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Total Libros</span>
+                        <span id="stat-total" class="text-lg font-bold text-slate-900 dark:text-white">0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                        <span class="text-sm font-medium text-green-700 dark:text-green-300">Disponibles</span>
+                        <span id="stat-disponibles" class="text-lg font-bold text-green-600 dark:text-green-400">0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                        <span class="text-sm font-medium text-red-700 dark:text-red-300">Prestados</span>
+                        <span id="stat-prestados" class="text-lg font-bold text-red-600 dark:text-red-400">0</span>
+                    </div>
+                </div>
+            </div>
+
             <h2 class="mt-0 mb-4 text-slate-900 dark:text-white text-xl font-bold">Categorías</h2>
             
             <!-- Filtros -->
@@ -71,6 +170,25 @@
                 </a>
             </nav>
 
+            <!-- Acciones Masivas -->
+            <div class="border-t-2 border-slate-100 dark:border-slate-600 pt-4">
+                <h3 class="mt-0 mb-3 text-slate-900 dark:text-white text-lg font-bold">⚡ Acciones</h3>
+                <div class="flex flex-col gap-2">
+                    <button id="btn-marcar-todos" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>✓</span> Marcar Todos
+                    </button>
+                    <button id="btn-todos-disponibles" class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>📗</span> Todos Disponibles
+                    </button>
+                    <button id="btn-todos-prestados" class="w-full px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>📕</span> Todos Prestados
+                    </button>
+                    <button id="btn-eliminar-todos" class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2">
+                        <span>🗑️</span> Eliminar Todos
+                    </button>
+                </div>
+            </div>
+
             <!-- Formulario -->
             <div class="border-t-2 border-slate-100 dark:border-slate-600 pt-4">
                 <h3 class="mt-0 mb-4 text-slate-900 dark:text-white text-lg font-bold">➕ Agregar Libro</h3>
@@ -80,8 +198,13 @@
                         id="titulo-libro" 
                         placeholder="Título del libro" 
                         required
+                        maxlength="100"
                         class="px-3 py-2.5 border-2 border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-lg text-sm transition-all duration-300 ease-in-out outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/20 hover:border-slate-400 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
                     >
+                    <div class="text-xs text-slate-500 dark:text-slate-400 flex justify-between">
+                        <span id="contador-caracteres">0/100</span>
+                        <span id="mensaje-error" class="text-red-500 hidden">Título requerido</span>
+                    </div>
                     <select 
                         id="categoria-libro" 
                         required
@@ -127,7 +250,10 @@
                 <!-- Libro 1 -->
                 <div class="libro flex flex-col bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1 border-l-4 border-transparent hover:border-slate-900 dark:hover:border-blue-500 animate-fade-in" data-categoria="ciencia-ficcion">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight">El Principito</h3>
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="checkbox" class="estado-checkbox dark:bg-slate-700" aria-label="Seleccionar libro">
+                            <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors titulo-largo" title="Doble clic para editar">El Principito</h3>
+                        </div>
                         <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" aria-label="Eliminar libro">
                             ×
                         </button>
@@ -143,7 +269,10 @@
                 <!-- Libro 2 -->
                 <div class="libro flex flex-col bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1 border-l-4 border-transparent hover:border-slate-900 dark:hover:border-blue-500 animate-fade-in" data-categoria="novela">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight">Cien años de soledad</h3>
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="checkbox" class="estado-checkbox dark:bg-slate-700" aria-label="Seleccionar libro">
+                            <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors titulo-largo" title="Doble clic para editar">Cien años de soledad</h3>
+                        </div>
                         <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" aria-label="Eliminar libro">
                             ×
                         </button>
@@ -159,7 +288,10 @@
                 <!-- Libro 3 -->
                 <div class="libro flex flex-col bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1 border-l-4 border-transparent hover:border-slate-900 dark:hover:border-blue-500 animate-fade-in" data-categoria="programacion">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight">Clean Code</h3>
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="checkbox" class="estado-checkbox dark:bg-slate-700" aria-label="Seleccionar libro">
+                            <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors titulo-largo" title="Doble clic para editar">Clean Code</h3>
+                        </div>
                         <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" aria-label="Eliminar libro">
                             ×
                         </button>
@@ -175,7 +307,10 @@
                 <!-- Libro 4 -->
                 <div class="libro flex flex-col bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1 border-l-4 border-transparent hover:border-slate-900 dark:hover:border-blue-500 animate-fade-in" data-categoria="ciencia-ficcion">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight">Dune</h3>
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="checkbox" class="estado-checkbox dark:bg-slate-700" aria-label="Seleccionar libro">
+                            <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors titulo-largo" title="Doble clic para editar">Dune</h3>
+                        </div>
                         <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" aria-label="Eliminar libro">
                             ×
                         </button>
@@ -191,7 +326,10 @@
                 <!-- Libro 5 -->
                 <div class="libro flex flex-col bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1 border-l-4 border-transparent hover:border-slate-900 dark:hover:border-blue-500 animate-fade-in" data-categoria="novela">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight">Don Quijote de la Mancha</h3>
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="checkbox" class="estado-checkbox dark:bg-slate-700" aria-label="Seleccionar libro">
+                            <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors titulo-largo" title="Doble clic para editar">Don Quijote de la Mancha</h3>
+                        </div>
                         <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" aria-label="Eliminar libro">
                             ×
                         </button>
@@ -207,7 +345,10 @@
                 <!-- Libro 6 -->
                 <div class="libro flex flex-col bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-1 border-l-4 border-transparent hover:border-slate-900 dark:hover:border-blue-500 animate-fade-in" data-categoria="novela">
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight">Romeo y Julieta</h3>
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="checkbox" class="estado-checkbox dark:bg-slate-700" aria-label="Seleccionar libro">
+                            <h3 class="m-0 text-slate-900 dark:text-white text-lg font-bold flex-1 break-words leading-tight cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors titulo-largo" title="Doble clic para editar">Romeo y Julieta</h3>
+                        </div>
                         <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" aria-label="Eliminar libro">
                             ×
                         </button>
