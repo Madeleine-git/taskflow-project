@@ -24,7 +24,7 @@
     @apply animate-shake border-red-500 !important;
   }
 
-  .titulo-largo {
+  .texto-largo {
     @apply break-words hyphens-auto;
   }
 
