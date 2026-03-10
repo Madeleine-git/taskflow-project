@@ -2,8 +2,9 @@
   "name": "taskflow-project",
   "version": "1.0.0",
   "description": "Biblioteca Digital con Tailwind CSS",
+
   "scripts": {
-    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css",
+    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css && echo 'Build complete'",
     "watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
     "dev": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
   },
