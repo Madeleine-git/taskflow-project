@@ -1,12 +1,16 @@
 const { execSync } = require('child_process');
+const fs = require('fs');
 
-try {
-  console.log('Building CSS...');
-  execSync('npx tailwindcss -i ./src/input.css -o ./output.css --minify', {
-    stdio: 'inherit'
-  });
-  console.log('Build completed!');
-} catch (error) {
-  console.error('Build failed:', error);
-  process.exit(1);
-}
+// Build CSS en RAÍZ
+console.log('Building CSS...');
+execSync('npx tailwindcss -i ./src/input.css -o ./output.css --minify', {
+  stdio: 'inherit',
+  shell: true
+});
+
+console.log('✅ Build complete! output.css en raíz');
+// ... todo tu código actual ...
+
+console.log('Build complete!');
+
+// Deploy: 2026-03-11 13:45
