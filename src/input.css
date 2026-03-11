@@ -27,4 +27,7 @@
   .dark .estado-casilla-de-verificacion {
     @apply border-slate-600;
   }
+
+  .deploy-force {
+  display: none;
 }
