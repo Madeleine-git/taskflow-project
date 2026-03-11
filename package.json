@@ -2,8 +2,8 @@
   "name": "biblioteca-digital",
   "version": "1.0.0",
   "scripts": {
-    "build": "npx --yes tailwindcss@3 -i ./src/input.css -o ./output.css --minify",
-    "dev": "npx tailwindcss -i ./src/input.css -o ./output.css --watch"
+     "build:css": "tailwindcss -i ./src/styles.css -o ./output.css --watch",
+     "build": "tailwindcss -i ./src/styles.css -o ./output.css --minify"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0"
