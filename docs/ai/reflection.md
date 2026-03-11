@@ -1,0 +1,2 @@
+## Propósito de este documento
+Este documento sintetiza el aprendizaje obtenido tras integrar herramientas de IA en el flujo de desarrollo de TaskFlow. Incluye conclusiones sobre el impacto en productividad, calidad, y el rol del desarrollador en un entorno asistido por IA.

@@ -1,0 +1,2 @@
+## Propósito de este documento
+Este documento registra todos los experimentos realizados integrando herramientas de IA en el desarrollo de TaskFlow. Sirve como bitácora de aprendizaje, documentando qué funcionó, qué no, y las métricas de productividad obtenidas.
