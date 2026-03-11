@@ -20,7 +20,7 @@
     @apply absolute text-white text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }
 
-   .texto-largo {
+  .texto-largo {
     @apply break-words hyphens-auto;
   }
 
@@ -29,5 +29,6 @@
   }
 
   .deploy-force {
-  display: none;
-}
+    display: none;
+  }
+}  
