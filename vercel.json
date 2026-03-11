@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "rm -rf node_modules package-lock.json && npm install && npx tailwindcss -i ./src/input.css -o ./output.css --minify",
+  "buildCommand": "npm install && npx tailwindcss -i ./src/input.css -o ./output.css --minify",
   "outputDirectory": ".",
   "framework": null,
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "cacheDirectories": []
 }
