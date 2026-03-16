@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Digital</title>
-    <link rel="stylesheet" href="output.css">>
+    <link rel="stylesheet" href="output.css">
     
     <style>
         .editing {
@@ -47,6 +47,26 @@
         .texto-largo {
             word-break: break-word;
             hyphens: auto;
+        }
+
+        /* Rating stars */
+        .rating-star {
+            cursor: pointer;
+            user-select: none;
+            display: inline-block;
+            transition: transform 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+        .rating-star.filled {
+            color: #FFD700;
+        }
+        .rating-star.empty {
+            color: #94a3b8;
+            opacity: 0.95;
+        }
+        .rating-star:hover {
+            transform: scale(1.15);
         }
     </style>
 </head>
@@ -112,6 +132,14 @@
                     <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
                         <span class="text-sm font-medium text-red-700 dark:text-red-300">Prestados</span>
                         <span id="stat-prestados" class="text-lg font-bold text-red-600 dark:text-red-400">0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <span class="text-sm font-medium text-yellow-800 dark:text-yellow-200">Promedio rating</span>
+                        <span id="stat-rating-promedio" class="text-lg font-bold text-yellow-700 dark:text-yellow-300">0.0</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Mejor calificado</span>
+                        <span id="stat-rating-mejor" class="text-sm font-bold text-slate-900 dark:text-white text-right max-w-[9rem] truncate">—</span>
                     </div>
                 </div>
             </div>
@@ -344,4 +372,4 @@
 
     <script src="app.js"></script>
 </body>
-</html><- Deploy: 2026-03-11 14:11 -->
+</html>

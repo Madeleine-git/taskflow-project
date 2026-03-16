@@ -22,6 +22,8 @@ const mensajeError = document.getElementById('mensaje-error');
 const statTotal = document.getElementById('stat-total');
 const statDisponibles = document.getElementById('stat-disponibles');
 const statPrestados = document.getElementById('stat-prestados');
+const statRatingPromedio = document.getElementById('stat-rating-promedio');
+const statRatingMejor = document.getElementById('stat-rating-mejor');
 
 // Referencias a botones de acciones masivas
 const btnMarcarTodos = document.getElementById('btn-marcar-todos');
@@ -63,6 +65,17 @@ function init() {
         console.log('Usando libros del HTML:', libros.length);
         guardarLibros();
     }
+
+    // Normalizar rating en libros existentes (compatibilidad hacia atrás)
+    let huboCambios = false;
+    libros.forEach(l => {
+        if (typeof l.rating !== 'number') {
+            l.rating = 0;
+            huboCambios = true;
+        }
+        l.rating = normalizarRating(l.rating);
+    });
+    if (huboCambios) guardarLibros();
     
     renderizarLibros();
     actualizarEstadisticas();
@@ -148,7 +161,8 @@ function leerLibrosDelHTML() {
                 titulo: titulo,
                 categoria: categoria,
                 estado: estado,
-                fechaAgregado: new Date().toISOString()
+                fechaAgregado: new Date().toISOString(),
+                rating: 0
             });
         }
     });
@@ -172,11 +186,16 @@ function actualizarEstadisticas() {
     const total = libros.length;
     const disponibles = libros.filter(l => l.estado === 'disponible').length;
     const prestados = libros.filter(l => l.estado === 'prestado').length;
+
+    const { promedioRating, mejorLibroTitulo } = calcularEstadisticasRating(libros);
     
     // Animación de conteo
     animarContador(statTotal, parseInt(statTotal.textContent), total);
     animarContador(statDisponibles, parseInt(statDisponibles.textContent), disponibles);
     animarContador(statPrestados, parseInt(statPrestados.textContent), prestados);
+
+    if (statRatingPromedio) statRatingPromedio.textContent = promedioRating.toFixed(1);
+    if (statRatingMejor) statRatingMejor.textContent = mejorLibroTitulo || '—';
 }
 
 function animarContador(elemento, inicio, fin) {
@@ -236,6 +255,10 @@ function crearElementoLibro(libro) {
     const tituloMostrado = libro.titulo.length > 50 
         ? libro.titulo.substring(0, 50) + '...' 
         : libro.titulo;
+
+    const ratingActual = normalizarRating(libro.rating ?? 0);
+    const ratingTexto = ratingActual > 0 ? `<span class="text-xs font-bold text-yellow-700 dark:text-yellow-300">(${ratingActual}/5)</span>` : '';
+    const estrellasHtml = crearEstrellasHTML(libro.id, ratingActual);
     
     div.innerHTML = `
         <div class="flex justify-between items-start mb-2 gap-2">
@@ -246,6 +269,12 @@ function crearElementoLibro(libro) {
             <button class="btn-eliminar flex-shrink-0 w-8 h-8 rounded-full border-2 border-red-500 text-red-500 bg-transparent hover:bg-red-500 hover:text-white transition-all duration-300 ease-in-out hover:scale-110 focus:scale-105 focus:ring-2 focus:ring-red-500/50 flex items-center justify-center text-xl leading-none cursor-pointer p-0" data-id="${libro.id}" aria-label="Eliminar libro">
                 ×
             </button>
+        </div>
+        <div class="flex items-center justify-between gap-3 mb-2">
+            <div class="rating flex items-center gap-1" data-id="${libro.id}" aria-label="Calificar libro">
+                ${estrellasHtml}
+            </div>
+            ${ratingTexto}
         </div>
         <div class="flex justify-between items-center mt-auto pt-2 border-t border-slate-100 dark:border-slate-600 gap-2">
             <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">${nombreCategoria}</span>
@@ -260,6 +289,7 @@ function crearElementoLibro(libro) {
     const spanEstado = div.querySelector('.estado');
     const titulo = div.querySelector('h3');
     const checkbox = div.querySelector('.estado-checkbox');
+    const ratingContainer = div.querySelector('.rating');
     
     btnEliminar.addEventListener('click', () => eliminarLibro(libro.id));
     spanEstado.addEventListener('click', () => toggleEstado(libro.id));
@@ -278,6 +308,47 @@ function crearElementoLibro(libro) {
             div.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-slate-800');
         }
     });
+
+    // Rating estrellas (hover + click toggle)
+    if (ratingContainer) {
+        const estrellas = Array.from(ratingContainer.querySelectorAll('.rating-star'));
+        const pintar = (valor) => {
+            estrellas.forEach(star => {
+                const v = parseInt(star.dataset.value, 10);
+                if (v <= valor) {
+                    star.classList.add('filled');
+                    star.classList.remove('empty');
+                    star.textContent = '★';
+                } else {
+                    star.classList.remove('filled');
+                    star.classList.add('empty');
+                    star.textContent = '☆';
+                }
+            });
+        };
+
+        ratingContainer.addEventListener('mouseover', (e) => {
+            const star = e.target.closest('.rating-star');
+            if (!star) return;
+            const valor = parseInt(star.dataset.value, 10);
+            if (Number.isFinite(valor)) pintar(valor);
+        });
+
+        ratingContainer.addEventListener('mouseout', () => {
+            pintar(normalizarRating(libro.rating ?? 0));
+        });
+
+        ratingContainer.addEventListener('click', (e) => {
+            const star = e.target.closest('.rating-star');
+            if (!star) return;
+            const valor = parseInt(star.dataset.value, 10);
+            if (!Number.isFinite(valor)) return;
+
+            const actual = normalizarRating(libro.rating ?? 0);
+            const nuevo = (valor === actual) ? 0 : valor;
+            setRatingLibro(libro.id, nuevo);
+        });
+    }
     
     return div;
 }
@@ -540,33 +611,50 @@ function mostrarErrorTitulo(mensaje) {
 }
 
 function agregarLibro(titulo, categoria, estado) {
-    const nuevoLibro = {
-        id: Date.now(),
-        titulo: titulo,
-        categoria: categoria,
-        estado: estado,
-        fechaAgregado: new Date().toISOString()
-    };
-    
-    libros.unshift(nuevoLibro);
-    guardarLibros();
-    
-    if (buscador) buscador.value = '';
-    
-    renderizarLibros();
-    actualizarEstadisticas();
-    
-    // Ocultar si no coincide con filtro activo
-    if (categoriaActiva !== 'todos' && categoriaActiva !== categoria) {
-        setTimeout(() => {
-            const elemento = contenedorLibros.querySelector(`[data-id="${nuevoLibro.id}"]`);
-            if (elemento) elemento.classList.add('hidden');
-        }, 10);
+    try {
+        // Validar duplicados (mismo título y categoría, ignorando mayúsculas y espacios)
+        const existeDuplicado = libros.some(libro =>
+            libro.titulo.trim().toLowerCase() === titulo.trim().toLowerCase() &&
+            libro.categoria === categoria
+        );
+
+        if (existeDuplicado) {
+            mostrarNotificacion(`❌ Ya existe un libro titulado "${titulo}" en la categoría seleccionada`, 'error');
+            return;
+        }
+
+        const nuevoLibro = {
+            id: crypto.randomUUID(),
+            titulo: titulo,
+            categoria: categoria,
+            estado: estado,
+            fechaAgregado: new Date().toISOString(),
+            rating: 0
+        };
+
+        libros.unshift(nuevoLibro);
+        guardarLibros();
+
+        if (buscador) buscador.value = '';
+
+        renderizarLibros();
+        actualizarEstadisticas();
+
+        // Ocultar si no coincide con filtro activo
+        if (categoriaActiva !== 'todos' && categoriaActiva !== categoria) {
+            setTimeout(() => {
+                const elemento = contenedorLibros.querySelector(`[data-id="${nuevoLibro.id}"]`);
+                if (elemento) elemento.classList.add('hidden');
+            }, 10);
+        }
+
+        formLibro.reset();
+        if (contadorCaracteres) contadorCaracteres.textContent = '0/100';
+        mostrarNotificacion(`📚 "${titulo.substring(0, 30)}${titulo.length > 30 ? '...' : ''}" agregado correctamente`);
+    } catch (error) {
+        console.error('Error al agregar libro:', error);
+        mostrarNotificacion('❌ Ocurrió un error al agregar el libro.', 'error');
     }
-    
-    formLibro.reset();
-    if (contadorCaracteres) contadorCaracteres.textContent = '0/100';
-    mostrarNotificacion(`📚 "${titulo.substring(0, 30)}${titulo.length > 30 ? '...' : ''}" agregado correctamente`);
 }
 
 // Eliminar Libro
@@ -704,6 +792,56 @@ function escapeHtml(texto) {
     const div = document.createElement('div');
     div.textContent = texto;
     return div.innerHTML;
+}
+
+function normalizarRating(valor) {
+    const n = Number(valor);
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(0, Math.min(5, Math.round(n)));
+}
+
+function crearEstrellasHTML(libroId, rating) {
+    const r = normalizarRating(rating);
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        const filled = i <= r;
+        html += `<span class="rating-star ${filled ? 'filled' : 'empty'}" data-id="${libroId}" data-value="${i}" aria-label="${i} estrellas">${filled ? '★' : '☆'}</span>`;
+    }
+    return html;
+}
+
+function setRatingLibro(id, rating) {
+    const libro = libros.find(l => l.id === id);
+    if (!libro) return;
+
+    libro.rating = normalizarRating(rating);
+    guardarLibros();
+    renderizarLibros();
+    actualizarEstadisticas();
+
+    if (libro.rating === 0) {
+        mostrarNotificacion(`☆ Rating quitado: "${libro.titulo.substring(0, 25)}${libro.titulo.length > 25 ? '...' : ''}"`);
+    } else {
+        mostrarNotificacion(`★ Rating: ${libro.rating}/5 para "${libro.titulo.substring(0, 25)}${libro.titulo.length > 25 ? '...' : ''}"`);
+    }
+}
+
+function calcularEstadisticasRating(lista) {
+    const conRating = lista
+        .map(l => ({ ...l, rating: normalizarRating(l.rating ?? 0) }))
+        .filter(l => l.rating > 0);
+
+    const promedioRating = conRating.length === 0
+        ? 0
+        : conRating.reduce((acc, l) => acc + l.rating, 0) / conRating.length;
+
+    let mejorLibroTitulo = '';
+    if (conRating.length > 0) {
+        const mejor = conRating.reduce((best, cur) => (cur.rating > best.rating ? cur : best), conRating[0]);
+        mejorLibroTitulo = mejor?.titulo || '';
+    }
+
+    return { promedioRating, mejorLibroTitulo };
 }
 
 // Notificación mejorada con tipos
