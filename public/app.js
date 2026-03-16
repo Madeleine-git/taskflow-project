@@ -66,11 +66,16 @@ function init() {
         guardarLibros();
     }
 
-    // Normalizar rating en libros existentes (compatibilidad hacia atrás)
+    // Normalizar rating y marcado en libros existentes (compatibilidad hacia atrás)
     let huboCambios = false;
     libros.forEach(l => {
         if (typeof l.rating !== 'number') {
             l.rating = 0;
+            huboCambios = true;
+        }
+        // Asegurar que existe la propiedad marcado
+        if (typeof l.marcado !== 'boolean') {
+            l.marcado = false;
             huboCambios = true;
         }
         l.rating = normalizarRating(l.rating);
@@ -162,7 +167,8 @@ function leerLibrosDelHTML() {
                 categoria: categoria,
                 estado: estado,
                 fechaAgregado: new Date().toISOString(),
-                rating: 0
+                rating: 0,
+                marcado: false
             });
         }
     });
@@ -300,12 +306,28 @@ function crearElementoLibro(libro) {
         editarTitulo(libro.id, titulo);
     });
     
-    // Checkbox para selección
+    // Checkbox para selección - ahora con estado persistente
+    checkbox.checked = libro.marcado; // Restaurar estado guardado
+
+    if (libro.marcado) {
+        div.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-slate-800');
+    }
+    
     checkbox.addEventListener('change', (e) => {
-        if (e.target.checked) {
+        const estaMarcado = e.target.checked;
+        
+        // Actualizar visualmente
+        if (estaMarcado) {
             div.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-slate-800');
         } else {
             div.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2', 'dark:ring-offset-slate-800');
+        }
+        
+        // Guardar en el estado del libro
+        const libroActual = libros.find(l => l.id === libro.id);
+        if (libroActual) {
+            libroActual.marcado = estaMarcado;
+            guardarLibros();
         }
     });
 
@@ -431,13 +453,14 @@ function configurarAccionesMasivas() {
     btnMarcarTodos.addEventListener('click', () => {
         const checkboxes = contenedorLibros.querySelectorAll('.estado-checkbox');
         const todosMarcados = Array.from(checkboxes).every(cb => cb.checked);
+        const nuevoEstado = !todosMarcados;
         
         checkboxes.forEach(cb => {
-            cb.checked = !todosMarcados;
+            cb.checked = nuevoEstado;
             cb.dispatchEvent(new Event('change'));
         });
         
-        mostrarNotificacion(todosMarcados ? '❌ Selección limpiada' : '✓ Todos los libros seleccionados');
+        mostrarNotificacion(nuevoEstado ? '✓ Todos los libros seleccionados' : '❌ Selección limpiada');
     });
     
     // Todos disponibles
@@ -629,7 +652,8 @@ function agregarLibro(titulo, categoria, estado) {
             categoria: categoria,
             estado: estado,
             fechaAgregado: new Date().toISOString(),
-            rating: 0
+            rating: 0,
+            marcado: false
         };
 
         libros.unshift(nuevoLibro);
