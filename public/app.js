@@ -3,10 +3,29 @@
  * Persistencia en LocalStorage + Tailwind CSS
  */
 
+/** @typedef {'todos'|'novela'|'ciencia-ficcion'|'historia'|'programacion'} Categoria */
+/** @typedef {'disponible'|'prestado'|'leyendo'} EstadoLibro */
+/**
+ * @typedef Libro
+ * @property {string|number} id
+ * @property {string} titulo
+ * @property {Categoria} categoria
+ * @property {EstadoLibro} estado
+ * @property {string} fechaAgregado
+ * @property {number} rating
+ * @property {boolean} marcado
+ */
+
 // Estado de la aplicación
+/** @type {Libro[]} */
 let libros = [];
 const STORAGE_KEY = 'biblioteca_libros';
 let categoriaActiva = 'todos';
+
+/** @type {ReadonlyArray<Categoria>} */
+const CATEGORIAS_VALIDAS = ['todos', 'novela', 'ciencia-ficcion', 'historia', 'programacion'];
+/** @type {ReadonlyArray<EstadoLibro>} */
+const ESTADOS_VALIDOS = ['disponible', 'prestado', 'leyendo'];
 
 // Referencias al DOM
 const formLibro = document.getElementById('form-libro');
@@ -17,6 +36,8 @@ const themeToggle = document.getElementById('theme-toggle');
 const tituloInput = document.getElementById('titulo-libro');
 const contadorCaracteres = document.getElementById('contador-caracteres');
 const mensajeError = document.getElementById('mensaje-error');
+const categoriaInput = document.getElementById('categoria-libro');
+const estadoInput = document.getElementById('estado-libro');
 
 // Referencias a estadísticas
 const statTotal = document.getElementById('stat-total');
@@ -32,6 +53,10 @@ const btnTodosPrestados = document.getElementById('btn-todos-prestados');
 const btnEliminarTodos = document.getElementById('btn-eliminar-todos');
 
 // Inicialización
+/**
+ * Inicializa tema, listeners, estado desde HTML/LocalStorage y render inicial.
+ * @returns {void}
+ */
 function init() {
     console.log('=== INICIANDO APLICACIÓN ===');
     
@@ -92,7 +117,49 @@ function init() {
     activarFiltro(hash);
 }
 
+/**
+ * Aplica una clase de "shake" a un elemento (si existe).
+ * @param {HTMLElement|null|undefined} el
+ * @returns {void}
+ */
+function shake(el) {
+    if (!el) return;
+    el.classList.add('error-shake');
+    setTimeout(() => el.classList.remove('error-shake'), 500);
+}
+
+/**
+ * Normaliza un título para comparaciones (trim + minúsculas + colapsa espacios).
+ * @param {string} titulo
+ * @returns {string}
+ */
+function normalizarTituloParaComparacion(titulo) {
+    return String(titulo).trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+/**
+ * Valida que una categoría pertenezca al conjunto permitido.
+ * @param {string} categoria
+ * @returns {categoria is Categoria}
+ */
+function esCategoriaValida(categoria) {
+    return CATEGORIAS_VALIDAS.includes(/** @type {Categoria} */ (categoria));
+}
+
+/**
+ * Valida que un estado pertenezca al conjunto permitido.
+ * @param {string} estado
+ * @returns {estado is EstadoLibro}
+ */
+function esEstadoValido(estado) {
+    return ESTADOS_VALIDOS.includes(/** @type {EstadoLibro} */ (estado));
+}
+
 // Configurar contador de caracteres
+/**
+ * Configura el contador de caracteres del título y limpia errores al teclear.
+ * @returns {void}
+ */
 function configurarContadorCaracteres() {
     if (!tituloInput || !contadorCaracteres) return;
     
@@ -118,6 +185,10 @@ function configurarContadorCaracteres() {
 }
 
 // Gestión de Tema Oscuro
+/**
+ * Inicializa el tema (dark/light) usando preferencia y LocalStorage.
+ * @returns {void}
+ */
 function initTheme() {
     const html = document.documentElement;
     const currentTheme = localStorage.getItem('theme') || 
@@ -144,6 +215,10 @@ function initTheme() {
 }
 
 // Leer Libros de HTML
+/**
+ * Lee los libros existentes en el HTML inicial y los transforma en objetos `Libro`.
+ * @returns {Libro[]}
+ */
 function leerLibrosDelHTML() {
     const librosHTML = [];
     const elementos = contenedorLibros.querySelectorAll(':scope > .libro');
@@ -177,6 +252,10 @@ function leerLibrosDelHTML() {
 }
 
 // Guardar libros
+/**
+ * Persiste el array `libros` en LocalStorage.
+ * @returns {void}
+ */
 function guardarLibros() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(libros));
@@ -188,6 +267,10 @@ function guardarLibros() {
 }
 
 // Actualizar estadísticas
+/**
+ * Recalcula y pinta estadísticas (total, disponibles, prestados, ratings).
+ * @returns {void}
+ */
 function actualizarEstadisticas() {
     const total = libros.length;
     const disponibles = libros.filter(l => l.estado === 'disponible').length;
@@ -204,6 +287,13 @@ function actualizarEstadisticas() {
     if (statRatingMejor) statRatingMejor.textContent = mejorLibroTitulo || '—';
 }
 
+/**
+ * Anima un contador numérico en el DOM.
+ * @param {HTMLElement|null} elemento
+ * @param {number} inicio
+ * @param {number} fin
+ * @returns {void}
+ */
 function animarContador(elemento, inicio, fin) {
     if (!elemento || inicio === fin) return;
     const duracion = 500;
@@ -223,6 +313,10 @@ function animarContador(elemento, inicio, fin) {
 }
 
 // Renderizar libros
+/**
+ * Renderiza todos los libros en el contenedor aplicando el filtro activo.
+ * @returns {void}
+ */
 function renderizarLibros() {
     contenedorLibros.innerHTML = '';
     
@@ -245,6 +339,11 @@ function renderizarLibros() {
 }
 
 // Crear elemento libro
+/**
+ * Crea el nodo DOM para una tarjeta de libro y adjunta listeners.
+ * @param {Libro} libro
+ * @returns {HTMLDivElement}
+ */
 function crearElementoLibro(libro) {
     const div = document.createElement('div');
     
@@ -376,6 +475,12 @@ function crearElementoLibro(libro) {
 }
 
 // Editar título
+/**
+ * Habilita edición inline del título de un libro.
+ * @param {string|number} id
+ * @param {HTMLElement} elementoTitulo
+ * @returns {void}
+ */
 function editarTitulo(id, elementoTitulo) {
     const libro = libros.find(l => l.id === id);
     if (!libro) return;
@@ -432,6 +537,11 @@ function editarTitulo(id, elementoTitulo) {
 }
 
 // Toggle estado individual
+/**
+ * Alterna el estado `disponible` ↔ `prestado` para un libro individual.
+ * @param {string|number} id
+ * @returns {void}
+ */
 function toggleEstado(id) {
     const libro = libros.find(l => l.id === id);
     if (!libro) return;
@@ -448,6 +558,47 @@ function toggleEstado(id) {
 }
 
 // Configurar acciones masivas
+/**
+ * Obtiene los IDs numéricos seleccionados en el grid (si hay).
+ * Nota: los `data-id` de los libros nuevos son UUID (string), y los
+ * seleccionados desde tarjetas dinámicas siempre tienen `data-id`.
+ * @returns {Array<string|number>}
+ */
+function obtenerIdsSeleccionados() {
+    const checkboxes = contenedorLibros.querySelectorAll('.estado-checkbox:checked');
+    return Array.from(checkboxes).map(cb => cb.dataset.id).filter(Boolean);
+}
+
+/**
+ * Aplica una acción a la selección actual; si no hay selección, aplica a todos.
+ * @template T
+ * @param {(libro: Libro) => void} aplicar
+ * @param {{ mensajeSeleccion?: (n: number) => string, mensajeTodos?: string }} mensajes
+ * @returns {void}
+ */
+function aplicarAccionMasiva(aplicar, mensajes = {}) {
+    if (libros.length === 0) {
+        mostrarNotificacion('📭 No hay libros para modificar', 'error');
+        return;
+    }
+
+    const idsSeleccionados = obtenerIdsSeleccionados();
+    if (idsSeleccionados.length > 0) {
+        const idsSet = new Set(idsSeleccionados.map(String));
+        libros.forEach(l => {
+            if (idsSet.has(String(l.id))) aplicar(l);
+        });
+        if (mensajes.mensajeSeleccion) mostrarNotificacion(mensajes.mensajeSeleccion(idsSeleccionados.length));
+    } else {
+        libros.forEach(aplicar);
+        if (mensajes.mensajeTodos) mostrarNotificacion(mensajes.mensajeTodos);
+    }
+
+    guardarLibros();
+    renderizarLibros();
+    actualizarEstadisticas();
+}
+
 function configurarAccionesMasivas() {
     // Marcar todos los checkboxes
     btnMarcarTodos.addEventListener('click', () => {
@@ -465,56 +616,24 @@ function configurarAccionesMasivas() {
     
     // Todos disponibles
     btnTodosDisponibles.addEventListener('click', () => {
-        if (libros.length === 0) {
-            mostrarNotificacion('📭 No hay libros para modificar', 'error');
-            return;
-        }
-        
-        const checkboxes = contenedorLibros.querySelectorAll('.estado-checkbox:checked');
-        if (checkboxes.length > 0) {
-            // Solo los seleccionados
-            checkboxes.forEach(cb => {
-                const id = parseInt(cb.dataset.id);
-                const libro = libros.find(l => l.id === id);
-                if (libro) libro.estado = 'disponible';
-            });
-            mostrarNotificacion(`📗 ${checkboxes.length} libro(s) marcado(s) como disponibles`);
-        } else {
-            // Todos
-            libros.forEach(libro => libro.estado = 'disponible');
-            mostrarNotificacion('📗 Todos los libros marcados como disponibles');
-        }
-        
-        guardarLibros();
-        renderizarLibros();
-        actualizarEstadisticas();
+        aplicarAccionMasiva(
+            (libro) => { libro.estado = 'disponible'; },
+            {
+                mensajeSeleccion: (n) => `📗 ${n} libro(s) marcado(s) como disponibles`,
+                mensajeTodos: '📗 Todos los libros marcados como disponibles'
+            }
+        );
     });
     
     // Todos prestados
     btnTodosPrestados.addEventListener('click', () => {
-        if (libros.length === 0) {
-            mostrarNotificacion('📭 No hay libros para modificar', 'error');
-            return;
-        }
-        
-        const checkboxes = contenedorLibros.querySelectorAll('.estado-checkbox:checked');
-        if (checkboxes.length > 0) {
-            // Solo los seleccionados
-            checkboxes.forEach(cb => {
-                const id = parseInt(cb.dataset.id);
-                const libro = libros.find(l => l.id === id);
-                if (libro) libro.estado = 'prestado';
-            });
-            mostrarNotificacion(`📕 ${checkboxes.length} libro(s) marcado(s) como prestados`);
-        } else {
-            // Todos
-            libros.forEach(libro => libro.estado = 'prestado');
-            mostrarNotificacion('📕 Todos los libros marcados como prestados');
-        }
-        
-        guardarLibros();
-        renderizarLibros();
-        actualizarEstadisticas();
+        aplicarAccionMasiva(
+            (libro) => { libro.estado = 'prestado'; },
+            {
+                mensajeSeleccion: (n) => `📕 ${n} libro(s) marcado(s) como prestados`,
+                mensajeTodos: '📕 Todos los libros marcados como prestados'
+            }
+        );
     });
     
     // Eliminar todos
@@ -524,12 +643,12 @@ function configurarAccionesMasivas() {
             return;
         }
         
-        const checkboxes = contenedorLibros.querySelectorAll('.estado-checkbox:checked');
+        const idsSeleccionados = obtenerIdsSeleccionados();
         let mensaje = '¿Estás seguro de eliminar TODOS los libros?';
         let eliminarTodos = true;
         
-        if (checkboxes.length > 0) {
-            mensaje = `¿Eliminar ${checkboxes.length} libro(s) seleccionado(s)?`;
+        if (idsSeleccionados.length > 0) {
+            mensaje = `¿Eliminar ${idsSeleccionados.length} libro(s) seleccionado(s)?`;
             eliminarTodos = false;
         }
         
@@ -539,9 +658,9 @@ function configurarAccionesMasivas() {
             libros = [];
             mostrarNotificacion('🗑️ Todos los libros han sido eliminados');
         } else {
-            const idsAEliminar = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
-            const cantidadEliminada = idsAEliminar.length;
-            libros = libros.filter(l => !idsAEliminar.includes(l.id));
+            const idsSet = new Set(idsSeleccionados.map(String));
+            const cantidadEliminada = idsSeleccionados.length;
+            libros = libros.filter(l => !idsSet.has(String(l.id)));
             mostrarNotificacion(`🗑️ ${cantidadEliminada} libro(s) eliminado(s)`);
         }
         
@@ -552,6 +671,10 @@ function configurarAccionesMasivas() {
 }
 
 // Event Listeners
+/**
+ * Configura listeners globales: formulario, buscador, filtros y navegación.
+ * @returns {void}
+ */
 function configurarEventListeners() {
     // Formulario
     if (formLibro) {
@@ -581,11 +704,13 @@ function configurarEventListeners() {
 }
 
 // Agregar Libro
+/**
+ * Valida y procesa el submit del formulario.
+ * @param {SubmitEvent} e
+ * @returns {void}
+ */
 function manejarSubmit(e) {
     e.preventDefault();
-    
-    const categoriaInput = document.getElementById('categoria-libro');
-    const estadoInput = document.getElementById('estado-libro');
     
     const titulo = tituloInput?.value?.trim();
     const categoria = categoriaInput?.value;
@@ -608,38 +733,72 @@ function manejarSubmit(e) {
         mostrarErrorTitulo('El título no puede exceder 100 caracteres');
         return;
     }
+
+    // Validación: sin solo símbolos (al menos una letra o número)
+    if (!/[a-zA-ZÀ-ÿ0-9]/.test(titulo)) {
+        mostrarErrorTitulo('El título debe contener al menos una letra o número');
+        return;
+    }
+
+    // Validación: evitar múltiples espacios internos extremos
+    if (titulo !== titulo.replace(/\s+/g, ' ').trim()) {
+        mostrarErrorTitulo('Evita espacios múltiples en el título');
+        return;
+    }
     
     // Validación: categoría requerida
     if (!categoria) {
         mostrarNotificacion('❌ Por favor selecciona una categoría', 'error');
-        categoriaInput?.classList.add('error-shake');
-        setTimeout(() => categoriaInput?.classList.remove('error-shake'), 500);
+        shake(categoriaInput);
+        return;
+    }
+
+    // Validación: categoría válida (no manipulada)
+    if (!esCategoriaValida(categoria)) {
+        mostrarNotificacion('❌ Categoría inválida', 'error');
+        shake(categoriaInput);
+        return;
+    }
+
+    // Validación: estado válido (no manipulado)
+    if (!esEstadoValido(estado)) {
+        mostrarNotificacion('❌ Estado inválido', 'error');
+        shake(estadoInput);
         return;
     }
     
     agregarLibro(titulo, categoria, estado);
 }
 
+/**
+ * Muestra error asociado al campo título con feedback visual.
+ * @param {string} mensaje
+ * @returns {void}
+ */
 function mostrarErrorTitulo(mensaje) {
     if (mensajeError) {
         mensajeError.textContent = mensaje;
         mensajeError.classList.remove('hidden');
     }
-    tituloInput?.classList.add('error-shake');
+    shake(tituloInput);
     tituloInput?.focus();
-    
-    setTimeout(() => {
-        tituloInput?.classList.remove('error-shake');
-    }, 500);
 }
 
+/**
+ * Agrega un libro al inicio de la lista con validación de duplicados.
+ * @param {string} titulo
+ * @param {Categoria} categoria
+ * @param {EstadoLibro} estado
+ * @returns {void}
+ */
 function agregarLibro(titulo, categoria, estado) {
     try {
         // Validar duplicados (mismo título y categoría, ignorando mayúsculas y espacios)
-        const existeDuplicado = libros.some(libro =>
-            libro.titulo.trim().toLowerCase() === titulo.trim().toLowerCase() &&
+        const tituloNorm = normalizarTituloParaComparacion(titulo);
+        const existeDuplicado = libros.some(libro => (
+            normalizarTituloParaComparacion(libro.titulo) === tituloNorm &&
             libro.categoria === categoria
-        );
+        ));
 
         if (existeDuplicado) {
             mostrarNotificacion(`❌ Ya existe un libro titulado "${titulo}" en la categoría seleccionada`, 'error');
@@ -647,7 +806,7 @@ function agregarLibro(titulo, categoria, estado) {
         }
 
         const nuevoLibro = {
-            id: crypto.randomUUID(),
+            id: (crypto?.randomUUID?.() ?? String(Date.now()) + Math.random().toString(16).slice(2)),
             titulo: titulo,
             categoria: categoria,
             estado: estado,
@@ -682,6 +841,11 @@ function agregarLibro(titulo, categoria, estado) {
 }
 
 // Eliminar Libro
+/**
+ * Elimina un libro por id tras confirmación.
+ * @param {string|number} id
+ * @returns {void}
+ */
 function eliminarLibro(id) {
     const libro = libros.find(l => l.id === id);
     if (!libro) return;
@@ -701,6 +865,11 @@ function eliminarLibro(id) {
 }
 
 // Búsqueda
+/**
+ * Filtra visualmente por texto (título o categoría) respetando el filtro activo.
+ * @param {InputEvent} e
+ * @returns {void}
+ */
 function manejarBusqueda(e) {
     const texto = e.target.value.toLowerCase().trim();
     const elementos = contenedorLibros.querySelectorAll('.libro');
@@ -740,6 +909,11 @@ function manejarBusqueda(e) {
 }
 
 // Filtros
+/**
+ * Activa un filtro de categoría y repinta la lista.
+ * @param {string} categoria
+ * @returns {void}
+ */
 function activarFiltro(categoria) {
     categoriaActiva = categoria;
     
@@ -792,6 +966,11 @@ function mostrarTodosLosLibros() {
 }
 
 // Utilidades
+/**
+ * Devuelve el label amigable de una categoría.
+ * @param {string} categoria
+ * @returns {string}
+ */
 function formatearCategoria(categoria) {
     const categorias = {
         'todos': 'Todos los libros',
@@ -803,6 +982,11 @@ function formatearCategoria(categoria) {
     return categorias[categoria] || categoria;
 }
 
+/**
+ * Devuelve el label amigable de un estado.
+ * @param {string} estado
+ * @returns {string}
+ */
 function formatearEstado(estado) {
     const estados = {
         'disponible': 'Disponible',
@@ -812,18 +996,34 @@ function formatearEstado(estado) {
     return estados[estado] || estado;
 }
 
+/**
+ * Escapa HTML para evitar inyección al insertar texto en `innerHTML`.
+ * @param {string} texto
+ * @returns {string}
+ */
 function escapeHtml(texto) {
     const div = document.createElement('div');
     div.textContent = texto;
     return div.innerHTML;
 }
 
+/**
+ * Normaliza un rating a entero entre 0 y 5.
+ * @param {unknown} valor
+ * @returns {number}
+ */
 function normalizarRating(valor) {
     const n = Number(valor);
     if (!Number.isFinite(n)) return 0;
     return Math.max(0, Math.min(5, Math.round(n)));
 }
 
+/**
+ * Genera el HTML de estrellas para rating.
+ * @param {string|number} libroId
+ * @param {unknown} rating
+ * @returns {string}
+ */
 function crearEstrellasHTML(libroId, rating) {
     const r = normalizarRating(rating);
     let html = '';
@@ -834,6 +1034,12 @@ function crearEstrellasHTML(libroId, rating) {
     return html;
 }
 
+/**
+ * Setea el rating de un libro y actualiza UI + estadísticas.
+ * @param {string|number} id
+ * @param {number} rating
+ * @returns {void}
+ */
 function setRatingLibro(id, rating) {
     const libro = libros.find(l => l.id === id);
     if (!libro) return;
@@ -850,6 +1056,11 @@ function setRatingLibro(id, rating) {
     }
 }
 
+/**
+ * Calcula estadísticas de rating para una lista de libros.
+ * @param {Libro[]} lista
+ * @returns {{ promedioRating: number, mejorLibroTitulo: string }}
+ */
 function calcularEstadisticasRating(lista) {
     const conRating = lista
         .map(l => ({ ...l, rating: normalizarRating(l.rating ?? 0) }))
@@ -869,6 +1080,12 @@ function calcularEstadisticasRating(lista) {
 }
 
 // Notificación mejorada con tipos
+/**
+ * Muestra una notificación temporal.
+ * @param {string} mensaje
+ * @param {'success'|'error'} [tipo]
+ * @returns {void}
+ */
 function mostrarNotificacion(mensaje, tipo = 'success') {
     const anterior = document.querySelector('.notificacion');
     if (anterior) anterior.remove();
