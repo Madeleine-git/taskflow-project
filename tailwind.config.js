@@ -2,11 +2,14 @@
 module.exports = {
   darkMode: 'class',
   content: [
-    "./public/**/*.html",  // ← Cambia esto: busca en /public/
+    "./public/**/*.html",
     "./src/**/*.{js,html}"
   ],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        'sidebar': '18rem 1fr',
+      },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-in': 'slideIn 0.3s ease-out',
