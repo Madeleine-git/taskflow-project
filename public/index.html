@@ -240,6 +240,8 @@
             </div>
 
             <!-- Grid de Libros -->
+             <p id="loading" style="display:none" class="text-center text-slate-500 py-4">⏳ Cargando libros...</p>
+             <p id="error-red" style="display:none" class="text-center text-orange-500 py-2 text-sm">⚠️ Servidor no disponible, usando datos locales</p>
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="contenedor-libros">
                 
                 <!-- Libro 1 -->
@@ -371,6 +373,7 @@
         <p class="m-0">📖 Biblioteca Digital - Gestiona tu colección de libros</p>
     </footer>
 
+    <script src="src/api/client.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

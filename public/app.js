@@ -19,7 +19,6 @@
 // Estado de la aplicación
 /** @type {Libro[]} */
 let libros = [];
-const STORAGE_KEY = 'biblioteca_libros';
 let categoriaActiva = 'todos';
 
 /** @type {ReadonlyArray<Categoria>} */
@@ -57,7 +56,7 @@ const btnEliminarTodos = document.getElementById('btn-eliminar-todos');
  * Inicializa tema, listeners, estado desde HTML/LocalStorage y render inicial.
  * @returns {void}
  */
-function init() {
+async function init() {
     console.log('=== INICIANDO APLICACIÓN ===');
     
     // Inicializar tema
@@ -70,26 +69,28 @@ function init() {
     const librosDelHTML = leerLibrosDelHTML();
     console.log('Libros encontrados en HTML:', librosDelHTML.length);
     
-    // Verificar LocalStorage
-    const guardados = localStorage.getItem(STORAGE_KEY);
-    if (guardados) {
-        libros = JSON.parse(guardados);
-        console.log('Libros cargados de LocalStorage:', libros.length);
-        
-        // Fusionar con libros del HTML si faltan
-        if (libros.length < librosDelHTML.length) {
-            console.log('Agregando libros faltantes del HTML...');
-            librosDelHTML.forEach(libroHTML => {
-                const existe = libros.some(l => l.titulo === libroHTML.titulo && l.categoria === libroHTML.categoria);
-                if (!existe) libros.push(libroHTML);
-            });
-            guardarLibros();
-        }
-    } else {
-        libros = librosDelHTML;
-        console.log('Usando libros del HTML:', libros.length);
+    // Mostrar estado de carga
+    const loadingEl = document.getElementById('loading');
+    const errorRedEl = document.getElementById('error-red');
+    if (loadingEl) loadingEl.style.display = 'block';
+
+    try {
+        // Intentar cargar desde el servidor
+        libros = await obtenerLibros();
+        console.log('✅ Libros cargados desde el servidor:', libros.length);
         guardarLibros();
+        if (errorRedEl) errorRedEl.style.display = 'none';
+
+    } catch (error) {
+        console.error('❌ Error al conectar con el servidor:', error);
+        if (errorRedEl) {
+            errorRedEl.textContent = '❌ No se pudo conectar con el servidor';
+            errorRedEl.style.display = 'block';
+        }
+        libros = [];
     }
+
+    if (loadingEl) loadingEl.style.display = 'none';
 
     // Normalizar rating y marcado en libros existentes (compatibilidad hacia atrás)
     let huboCambios = false;
@@ -257,13 +258,7 @@ function leerLibrosDelHTML() {
  * @returns {void}
  */
 function guardarLibros() {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(libros));
-        console.log('✅ Datos guardados en LocalStorage:', libros.length, 'libros');
-    } catch (error) {
-        console.error('❌ Error al guardar:', error);
-        mostrarNotificacion('❌ Error al guardar datos', 'error');
-    }
+    // Los datos viven en el servidor
 }
 
 // Actualizar estadísticas
@@ -791,7 +786,7 @@ function mostrarErrorTitulo(mensaje) {
  * @param {EstadoLibro} estado
  * @returns {void}
  */
-function agregarLibro(titulo, categoria, estado) {
+async function agregarLibro(titulo, categoria, estado) {
     try {
         // Validar duplicados (mismo título y categoría, ignorando mayúsculas y espacios)
         const tituloNorm = normalizarTituloParaComparacion(titulo);
@@ -805,25 +800,26 @@ function agregarLibro(titulo, categoria, estado) {
             return;
         }
 
-        const nuevoLibro = {
-            id: (crypto?.randomUUID?.() ?? String(Date.now()) + Math.random().toString(16).slice(2)),
-            titulo: titulo,
-            categoria: categoria,
-            estado: estado,
+        let nuevoLibro;
+
+        nuevoLibro = await crearLibro({
+            titulo,
+            categoria,
+            estado: estado || 'disponible',
             fechaAgregado: new Date().toISOString(),
             rating: 0,
-            marcado: false
-        };
+            marcado: false,
+        });
+        console.log('✅ Libro creado en el servidor:', nuevoLibro);
+        
 
         libros.unshift(nuevoLibro);
         guardarLibros();
 
         if (buscador) buscador.value = '';
-
         renderizarLibros();
         actualizarEstadisticas();
 
-        // Ocultar si no coincide con filtro activo
         if (categoriaActiva !== 'todos' && categoriaActiva !== categoria) {
             setTimeout(() => {
                 const elemento = contenedorLibros.querySelector(`[data-id="${nuevoLibro.id}"]`);
@@ -846,11 +842,14 @@ function agregarLibro(titulo, categoria, estado) {
  * @param {string|number} id
  * @returns {void}
  */
-function eliminarLibro(id) {
+async function eliminarLibro(id) {
     const libro = libros.find(l => l.id === id);
     if (!libro) return;
     
     if (!confirm(`¿Eliminar "${libro.titulo}"?`)) return;
+    
+    await eliminarLibro_api(id);
+    console.log('✅ Libro eliminado del servidor');
     
     libros = libros.filter(l => l.id !== id);
     guardarLibros();
@@ -863,7 +862,6 @@ function eliminarLibro(id) {
     
     mostrarNotificacion(`🗑️ "${libro.titulo.substring(0, 20)}${libro.titulo.length > 20 ? '...' : ''}" eliminado`);
 }
-
 // Búsqueda
 /**
  * Filtra visualmente por texto (título o categoría) respetando el filtro activo.

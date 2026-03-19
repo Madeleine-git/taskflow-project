@@ -259,6 +259,46 @@ La selección múltiple no se guarda
     4. Push: git push origin feature/nueva-funcionalidad
     5. Abre un Pull Request
 
+## 🖥️ Backend (API REST)
+
+### Arrancar el servidor
+```bash
+cd server
+npm run dev
+```
+
+### Arquitectura del servidor
+```
+server/
+└── src/
+    ├── config/
+    │   └── env.js           # Carga y valida variables de entorno
+    ├── controllers/
+    │   └── task.controller.js  # Manejo de peticiones HTTP
+    ├── routes/
+    │   └── task.routes.js      # Definición de endpoints
+    ├── services/
+    │   └── task.service.js     # Lógica de negocio
+    └── index.js             # Punto de entrada
+```
+
+### Middlewares
+- **cors()**: Permite peticiones desde el frontend en otro dominio
+- **express.json()**: Transforma el body de las peticiones a JSON utilizable
+- **Error handler**: Captura errores globales y responde con códigos HTTP semánticos
+
+### Endpoints
+
+| Método |        Ruta        |       Descripción        |
+|--------|--------------------|--------------------------|
+| GET    | /api/v1/libros     | Obtener todos los libros |
+| POST   | /api/v1/libros     | Crear un libro nuevo     |
+| PATCH  | /api/v1/libros/:id | Actualizar un libro      |
+| DELETE | /api/v1/libros/:id | Eliminar un libro por ID |
+
+### Estrategia de persistencia
+El frontend intenta primero conectarse al servidor. Si no está disponible, usa LocalStorage como respaldo automático.
+
 ### 📄 Licencia
 MIT License - Ver LICENSE
 
