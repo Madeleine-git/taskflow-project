@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "nodemon src/index.js"
-  },
+  "dev": "nodemon src/index.js",
+  "build": "cd ../public && npx tailwindcss -i ./styles.css -o ./output.css",
+  "start": "node src/index.js"
+},
   
   "keywords": [],
   "author": "",
