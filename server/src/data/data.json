@@ -1,10 +1,55 @@
 [
   {
-    "id": 1773996538792,
+    "id": 1,
+    "titulo": "El Principito",
+    "categoria": "ciencia-ficcion",
+    "estado": "disponible",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
+    "rating": 0,
+    "marcado": false
+  },
+  {
+    "id": 2,
+    "titulo": "Cien años de soledad",
+    "categoria": "novela",
+    "estado": "prestado",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
+    "rating": 0,
+    "marcado": false
+  },
+  {
+    "id": 3,
     "titulo": "Clean Code",
     "categoria": "programacion",
     "estado": "disponible",
-    "fechaAgregado": "2026-03-20T08:48:58.792Z",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
+    "rating": 0,
+    "marcado": false
+  },
+  {
+    "id": 4,
+    "titulo": "Dune",
+    "categoria": "ciencia-ficcion",
+    "estado": "prestado",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
+    "rating": 0,
+    "marcado": false
+  },
+  {
+    "id": 5,
+    "titulo": "Don Quijote de la Mancha",
+    "categoria": "novela",
+    "estado": "prestado",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
+    "rating": 0,
+    "marcado": false
+  },
+  {
+    "id": 6,
+    "titulo": "Romeo y Julieta",
+    "categoria": "novela",
+    "estado": "disponible",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
     "rating": 0,
     "marcado": false
   }

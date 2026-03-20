@@ -1,0 +1,502 @@
+/*Variables CSS*/
+:root {
+  --color-primario: #101013;
+  --color-secundario: #f4f6f9;
+  --color-blanco: #ffffff;
+  --color-alta: #e74c3c;
+  --color-media: #f39c12;
+  --color-baja: #27ae60;
+  --color-gris:#6c757d;
+
+  --fuente-principal: 'Segoe UI', Tahoma, Verdana, sans-serif;
+
+  --espaciado-sm: 8px;
+  --espaciado-md: 16px;
+  --espaciado-lg: 24px;
+
+  --borde-radio: 8px;
+  --sombra: 0 2px 8px rgba(0,0,0,0.1);
+  --sombra-hover: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/*Estilos Generales*/
+* {
+  box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    background-color: var(--color-secundario);
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--color-primario);
+    color: white;
+    padding: var(--espaciado-md);
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(233, 210, 210, 0.3);
+}
+
+header h1 {
+  margin: 0 0 var(--espaciado-sm) 0;
+  font-size: 1.8rem;
+}
+
+/*Contenedor del buscador*/
+.buscador-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/*Estilo del Input de búsqueda*/
+#buscador {
+  width: 100%;
+  padding: 12px var(--espaciado-md);
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  background-color: rgba(255,255,255,0.15);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+#buscador::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+#buscador:focus {
+  outline: none;
+  background-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+}
+
+/*Estilos Generales*/
+main {
+    display: flex;
+    gap: var(--espaciado-lg);
+    padding: var(--espaciado-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 200px);
+}
+
+/*Barra Lateral*/
+aside {
+    flex: 1;
+    background-color: var(--color-blanco);
+    padding: var(--espaciado-md);
+    border-radius: var(--borde-radio);
+    box-shadow: var(--sombra);
+    height: fit-content;
+    position: sticky;
+    top: 140px;
+}
+
+aside h2 {
+    margin-top: 0;
+    margin-bottom: var(--espaciado-md);
+    color: var(--color-primario);
+    font-size: 1.3rem;
+}    
+
+/*Filtros de categorias*/
+.filtros {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-sm);
+    margin-bottom: var(--espaciado-lg);
+}
+
+.filtro-btn {
+    display: block;
+    padding: 12px var(--espaciado-md);
+    text-decoration: none;
+    color: var(--color-primario);
+    background-color: var(--color-secundario);
+    border-radius: var(--borde-radio);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.filtro-btn:hover{
+background-color: var(--color-primario);
+    color: var(--color-blanco);
+    transform: translateX(5px);
+    box-shadow: var(--sombra);
+}
+  
+
+/*Formulario para agregar Libros*/
+.formulario-libro {
+  border-top: 2px solid var(--color-secundario);
+  padding-top: var(--espaciado-md);
+}
+
+.formulario-libro h3 {
+  margin-top: 0;
+  color: var(--color-primario);
+  font-size: 1.1rem;
+  margin-bottom: var(--espaciado-md);
+}
+
+/*Estilo de Formulario*/
+#form-libro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaciado-sm);
+}
+
+#form-libro input,
+#form-libro select {
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--borde-radio);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+#form-libro input:focus,
+#form-libro select:focus {
+  outline: none;
+  border-color: var(--color-primario);
+}
+
+#form-libro button {
+  padding: 12px;
+  background-color: var(--color-primario);
+  color: white;
+  border: none;
+  border-radius: var(--borde-radio);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: var(--espaciado-sm);
+}
+
+#form-libro button:hover {
+  background-color: #2c2c35;
+  transform: translateY(-2px);
+  box-shadow: var(--sombra);
+}
+
+/*Lista de Libros*/
+.lista-libros {
+    flex: 3;
+}
+
+/*Descripcion de la Biblioteca*/
+.descripcion {
+  color: #666;
+  margin-bottom: var(--espaciado-lg);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+/*header con contador*/
+.header-libros {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--espaciado-md);
+  flex-wrap: wrap;
+  gap: var(--espaciado-sm);
+}
+
+.header-libros h2 {
+  margin: 0;
+  color: var(--color-primario);
+}
+
+/*Grid de libros actualizado*/
+.libros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--espaciado-md);
+}
+
+/*Estructura tarjeta del libro*/
+.libro {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-blanco);
+    padding: var(--espaciado-md);
+    border-radius: var(--borde-radio);
+    box-shadow: var(--sombra);
+    transition: transform 0.3s ease; 
+    position: relative;
+    border-left: 4px solid transparent;
+    animation: fadeIn 0.4s ease;
+}
+
+.libro:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-hover);
+    border-left-color: var(--color-primario);
+}
+
+/*header de la tarjeta (título + boton eliminar)*/
+.libro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--espaciado-sm);
+  gap: var(--espaciado-sm);
+}
+
+.libro h3 {
+    margin: 0;
+    color: var(--color-primario);
+    font-size: 1.2rem;
+    flex: 1;
+    word-break: break-word;
+}
+
+/*Botón eliminar*/
+.btn-eliminar {
+  background-color: transparent;
+  color: var(--color-alta);
+  border: 2px solid var(--color-alta);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.btn-eliminar:hover {
+  background-color: var(--color-alta);
+  color: white;
+  transform: scale(1.1);
+}
+
+/*Información del libro (categoría + estado)*/
+.libro-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: var(--espaciado-sm);
+  border-top: 1px solid #eee;
+  gap: var(--espaciado-sm);
+}
+
+.categoria {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/*Badges de Disponibilidad*/
+.disponible {
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.prestado {
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.disponible:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+.prestado:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+
+.estado.disponible {
+    background-color: var(--color-baja);
+}
+
+.estado.prestado {
+    background-color: var(--color-alta);
+}
+
+/* Utlidades para Javascript*/
+
+.libro.oculto {
+  display: none !important;
+}
+
+.libro.filtrado {
+  opacity: 0.3;
+  transform: scale(0.98);
+}
+
+.mensaje-vacio {
+  text-align: center;
+  padding: var(--espaciado-lg);
+  color: #666;
+  font-size: 1.1rem;
+  background-color: var(--color-blanco);
+  border-radius: var(--borde-radio);
+  box-shadow: var(--sombra);
+  margin-top: var(--espaciado-md);
+}
+
+.mensaje-vacio p {
+  margin: 0;
+}
+
+footer {
+  text-align: center;
+  padding: var(--espaciado-md);
+  background-color: var(--color-primario);
+  color: white;
+  margin-top: auto;
+}
+
+footer p {
+  margin: 0;
+}
+
+#novela:target ~ main .libro,
+#ciencia-ficcion:target ~ main .libro,
+#historia:target ~ main .libro,
+#programacion:target ~ main .libro {
+  display: none;
+}
+
+#novela:target ~ main aside .filtro-btn[href="#novela"],
+#ciencia-ficcion:target ~ main aside .filtro-btn[href="#ciencia-ficcion"],
+#programacion:target ~ main aside .filtro-btn[href="#programacion"] {
+    display: flex;
+}
+
+aside ul {
+    list-style: none;
+    padding: 0;
+}
+
+aside li {
+    margin-bottom: var(--espaciado-sm);
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/*Barra Lateral*/
+@media (max-width: 768px) {
+
+    main {
+        flex-direction: column;
+        padding: var(--espaciado-md);
+    }
+
+    aside {
+        position: static;
+        order: 2;
+        top: auto;
+    }
+
+    .lista-libros {
+        order: 1;
+    }
+
+    .libros-grid {
+    grid-template-columns: 1fr;
+    }
+
+    .filtros {
+    flex-direction: row;
+    flex-wrap: wrap;
+    }
+
+  .filtro-btn {
+    flex: 1;
+    min-width: 120px;
+    transform: none !important;
+    font-size: 0.9rem;
+    padding: 10px;
+    }
+
+  .formulario-libro {
+    margin-top: var(--espaciado-md);
+    }
+
+  header h1 {
+    font-size: 1.5rem;
+    }
+
+  #buscador {
+    font-size: 0.9rem;
+    }
+
+  .header-libros {
+    flex-direction: column;
+    align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+  .libro-header {
+    flex-direction: column;
+  }
+
+  .btn-eliminar {
+    align-self: flex-end;
+    margin-top: var(--espaciado-sm);
+  }
+
+  .libro-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espaciado-sm);
+  }
+}
+   
+/*Ajuste de filtros en móvil */
+  .filtros {
+        flex-direction: row;
+        flex-wrap: wrap;
+  }
+    
+  .filtro-btn {
+        flex: 1;
+        min-width: 120px;
+        transform: none !important;
+  }
+
+    .categoria {
+        text-align: left;
+  }
