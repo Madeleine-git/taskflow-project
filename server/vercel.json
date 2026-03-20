@@ -5,31 +5,5 @@
       "src": "src/index.js",
       "use": "@vercel/node"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "src/index.js"
-    },
-    {
-      "src": "/output.css",
-      "dest": "/public/output.css"
-    },
-    {
-      "src": "/styles.css",
-      "dest": "/public/styles.css"
-    },
-    {
-      "src": "/app.js",
-      "dest": "/public/app.js"
-    },
-    {
-      "src": "/api/client.js",
-      "dest": "/public/api/client.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "src/index.js"
-    }
   ]
 }
