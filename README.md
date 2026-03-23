@@ -75,14 +75,136 @@ taskflow-project/
 - **express.json()**: Transforma el body de las peticiones a JSON utilizable
 - **Error handler**: Captura errores globales y responde con códigos HTTP semánticos sin filtrar detalles técnicos
 
-### Endpoints
+## 🔌 Endpoints y ejemplos
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | /api/v1/libros | Obtener todos los libros |
-| POST | /api/v1/libros | Crear un libro nuevo |
-| PATCH | /api/v1/libros/:id | Actualizar un libro |
-| DELETE | /api/v1/libros/:id | Eliminar un libro por ID |
+### GET /api/v1/libros
+Obtiene todos los libros.
+
+**Request:**
+```http
+GET /api/v1/libros
+```
+
+**Response 200:**
+```json
+[
+  {
+    "id": 1,
+    "titulo": "Clean Code",
+    "categoria": "programacion",
+    "estado": "disponible",
+    "fechaAgregado": "2026-03-19T10:00:00.000Z",
+    "rating": 0,
+    "marcado": false
+  }
+]
+```
+
+---
+
+### POST /api/v1/libros
+Crea un nuevo libro.
+
+**Request:**
+```http
+POST /api/v1/libros
+Content-Type: application/json
+
+{
+  "titulo": "Clean Code",
+  "categoria": "programacion",
+  "estado": "disponible"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": 1234567890,
+  "titulo": "Clean Code",
+  "categoria": "programacion",
+  "estado": "disponible",
+  "fechaAgregado": "2026-03-19T10:00:00.000Z",
+  "rating": 0,
+  "marcado": false
+}
+```
+
+**Response 400 (sin título):**
+```json
+{
+  "error": "El título es obligatorio"
+}
+```
+
+---
+
+### PATCH /api/v1/libros/:id
+Actualiza un libro existente.
+
+**Request:**
+```http
+PATCH /api/v1/libros/1234567890
+Content-Type: application/json
+
+{
+  "estado": "prestado"
+}
+```
+
+**Response 200:**
+```json
+{
+  "id": 1234567890,
+  "titulo": "Clean Code",
+  "categoria": "programacion",
+  "estado": "prestado",
+  "fechaAgregado": "2026-03-19T10:00:00.000Z",
+  "rating": 0,
+  "marcado": false
+}
+```
+
+**Response 404 (no existe):**
+```json
+{
+  "error": "Libro no encontrado"
+}
+```
+
+---
+
+### DELETE /api/v1/libros/:id
+Elimina un libro por ID.
+
+**Request:**
+```http
+DELETE /api/v1/libros/1234567890
+```
+
+**Response 204:**
+```
+Sin contenido
+```
+
+**Response 404 (no existe):**
+```json
+{
+  "error": "Libro no encontrado"
+}
+```
+
+---
+
+### GET /api/v1/libros/error-test
+Fuerza un error 500 (solo para pruebas).
+
+**Response 500:**
+```json
+{
+  "error": "Error interno del servidor"
+}
+```
 
 ### Ejemplos de uso
 
