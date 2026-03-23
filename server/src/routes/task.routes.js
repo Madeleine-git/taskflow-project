@@ -124,4 +124,18 @@ router.patch('/:id', libroController.actualizarLibro);
  */
 router.delete('/:id', libroController.eliminarLibro);
 
+/**
+ * @swagger
+ * /api/v1/libros/error-test:
+ *   get:
+ *     summary: Forzar error 500 (solo para pruebas)
+ *     tags: [Libros]
+ *     responses:
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/error-test', (req, res, next) => {
+  next(new Error('Error interno forzado para pruebas'));
+});
+
 module.exports = router;
