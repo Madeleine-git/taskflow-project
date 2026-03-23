@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "nodemon src/index.js",
-  "build": "cd ../public && npx tailwindcss -i ./styles.css -o ./output.css",
-  "start": "node src/index.js"
-},
-  
+    "dev": "nodemon src/index.js",
+    "build": "cd ../public && npx tailwindcss -i ./styles.css -o ./output.css",
+    "start": "node src/index.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,7 +15,9 @@
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
