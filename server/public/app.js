@@ -74,14 +74,17 @@ async function init() {
     const errorRedEl = document.getElementById('error-red');
     if (loadingEl) loadingEl.style.display = 'block';
 
-    try {
-        // Intentar cargar desde el servidor
-        libros = await obtenerLibros();
-        console.log('✅ Libros cargados desde el servidor:', libros.length);
-        guardarLibros();
-        if (errorRedEl) errorRedEl.style.display = 'none';
+try {
+    const [librosData] = await Promise.all([
+        obtenerLibros(),
+        new Promise(resolve => setTimeout(resolve, 800))
+    ]);
+    libros = librosData;
+    console.log('✅ Libros cargados desde el servidor:', libros.length);
+    guardarLibros();
+    if (errorRedEl) errorRedEl.style.display = 'none';
 
-    } catch (error) {
+} catch (error) {
         console.error('❌ Error al conectar con el servidor:', error);
         if (errorRedEl) {
             errorRedEl.textContent = '❌ No se pudo conectar con el servidor';
