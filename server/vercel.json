@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
   "builds": [
     {
       "src": "src/index.js",
@@ -8,6 +7,14 @@
     }
   ],
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "src/index.js"
+    },
+    {
+      "src": "/api-docs(.*)",
+      "dest": "src/index.js"
+    },
     {
       "src": "/(.*)",
       "dest": "src/index.js"
