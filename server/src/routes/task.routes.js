@@ -102,6 +102,10 @@ router.post('/', libroController.crearLibro);
  *       404:
  *         description: Libro no encontrado
  */
+router.get('/error-test', (req, res, next) => {
+  next(new Error('Error interno forzado para pruebas'));
+});
+
 router.patch('/:id', libroController.actualizarLibro);
 
 /**
@@ -134,8 +138,6 @@ router.delete('/:id', libroController.eliminarLibro);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/error-test', (req, res, next) => {
-  next(new Error('Error interno forzado para pruebas'));
-});
+
 
 module.exports = router;

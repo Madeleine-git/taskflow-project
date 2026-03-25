@@ -16,14 +16,14 @@ function crearLibro(data) {
 }
 
 function actualizarLibro(id, data) {
-    const index = libros.findIndex((l) => l.id === Number(id));
+    const index = libros.findIndex((l) => String(l.id) === String(id));
     if (index === -1) throw new Error('NOT_FOUND');
     libros[index] = { ...libros[index], ...data };
     return libros[index];
 }
 
 function eliminarLibro(id) {
-    const index = libros.findIndex((l) => l.id === Number(id));
+    const index = libros.findIndex((l) => String(l.id) === String(id));
     if (index === -1) throw new Error('NOT_FOUND');
     libros.splice(index, 1);
 }
