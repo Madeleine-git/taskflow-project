@@ -46,25 +46,30 @@ Abre `public/index.html` con Live Server en VS Code.
 ## 🏗️ Arquitectura de carpetas
 ```
 taskflow-project/
-├── public/                      # Frontend
-│   ├── src/api/
-│   │   └── client.js            # Capa de red (fetch al servidor)
-│   ├── index.html               # Interfaz de usuario
-│   ├── styles.css               # Estilos
-│   └── app.js                   # Lógica del frontend
-├── server/                      # Backend
-│   └── src/
-│       ├── config/
-│       │   └── env.js           # Carga y valida variables de entorno
-│       ├── controllers/
-│       │   └── task.controller.js  # Manejo de peticiones HTTP
-│       ├── routes/
-│       │   └── task.routes.js      # Definición de endpoints
-│       ├── services/
-│       │   └── task.service.js     # Lógica de negocio
-│       └── index.js             # Punto de entrada del servidor
+├── server/                          # Backend + Frontend
+│   ├── public/                      # Frontend servido como estáticos
+│   │   ├── api/
+│   │   │   └── client.js            # Capa de red (fetch al servidor)
+│   │   ├── index.html               # Interfaz de usuario
+│   │   ├── app.js                   # Lógica del frontend
+│   │   └── output.css               # Estilos compilados con Tailwind
+│   ├── src/                         # Backend
+│   │   ├── config/
+│   │   │   ├── env.js               # Carga y valida variables de entorno
+│   │   │   └── swagger.js           # Configuración de Swagger
+│   │   ├── controllers/
+│   │   │   └── task.controller.js   # Manejo de peticiones HTTP
+│   │   ├── routes/
+│   │   │   └── task.routes.js       # Definición de endpoints
+│   │   ├── services/
+│   │   │   └── task.service.js      # Lógica de negocio
+│   │   ├── data/
+│   │   │   └── data.json            # Datos iniciales en memoria
+│   │   └── index.js                 # Punto de entrada del servidor
+│   ├── package.json
+│   └── vercel.json                  # Configuración de despliegue en Vercel
 ├── docs/
-│   └── backend-api.md           # Documentación de herramientas del ecosistema
+│   └── backend-api.md               # Documentación del ecosistema
 └── README.md
 ```
 
