@@ -9,6 +9,7 @@ Sistema de gestión de libros con arquitectura cliente-servidor. El frontend con
 ## 🌐 URL de producción
 API REST: `https://taskflow-project-teal.vercel.app/api/v1/libros`
 
+
 ## ✨ Características Principales
 
 - 📖 **Gestión Completa**: Añade, edita y elimina libros fácilmente
@@ -18,6 +19,28 @@ API REST: `https://taskflow-project-teal.vercel.app/api/v1/libros`
 - 💾 **Persistencia**: API REST desplegada en Vercel
 - 📱 **Diseño Responsive**: Adaptable desde móviles hasta escritorio
 - 🎨 **UI Moderna**: Interfaz limpia con feedback visual inmediato
+
+## 🔧 Herramientas y Tecnologías
+
+### Frontend
+- **HTML5** 
+- **CSS3 + Tailwind CSS** 
+- **JavaScript (Vanilla)** 
+- **Fetch API** 
+
+### Backend
+- **Node.js** 
+- **Express.js** 
+- **dotenv** 
+- **cors** 
+
+### Documentación y pruebas
+- **Swagger UI + swagger-jsdoc**
+- **Thunder Client**
+
+### Despliegue
+- **Vercel** — Plataforma de despliegue del frontend y backend
+- **GitHub** — Control de versiones e integración continua con Vercel
 
 ## 📋 Requisitos
 
