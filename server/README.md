@@ -6,6 +6,7 @@ Documentación técnica y exhaustiva del servidor Express que alimenta la API RE
 
 El servidor sigue el patrón de **separación de responsabilidades (SoC)** dividido en tres capas estrictas:
 
+```
 server/
 ├── public/                     # Frontend servido como estáticos
 │   ├── api/
@@ -29,7 +30,7 @@ server/
 ├── .env                        # Variables de entorno (no se sube a Git)
 ├── package.json
 └── vercel.json                 # Configuración de despliegue en Vercel
-
+```
 
 ## Variables de entorno
 
